@@ -78,10 +78,8 @@ public class NoteContentProvider extends ContentProvider {
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(AUTORITY, NOTE_PATH, URI_NOTES);
-        uriMatcher.addURI(AUTORITY, NOTE_PATH + "/#", URI_NOTES_ID);
-
+        uriMatcher.addURI(AUTORITY, NOTE_PATH + "#", URI_NOTES_ID);
     }
-
 
     DBHelper dbHelper;
     SQLiteDatabase db;
@@ -108,6 +106,7 @@ public class NoteContentProvider extends ContentProvider {
             case URI_NOTES_ID:
                 Log.d(LOG_TAG + " Конкретный ид: ", uri.toString());
                 String id = uri.getLastPathSegment();
+
                 Log.d("NoteContentProvider", "URI NOTES ID " + id);
 
                 // добавим ID к условиям выборки

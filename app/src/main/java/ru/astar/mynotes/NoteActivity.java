@@ -40,17 +40,29 @@ public class NoteActivity extends AppCompatActivity {
             int id = intent.getIntExtra(KEY_ID, 0);
             String uriPath = "content://"
                     + NoteContentProvider.AUTORITY + "/"
-                    + NoteContentProvider.NOTE_PATH + "/#" + id;
-
-            Log.d("NoteActivity", uriPath);
+                    + NoteContentProvider.NOTE_PATH + "#" + id;
 
             Uri uri = Uri.parse(uriPath);
-            Cursor cursor = getContentResolver().query(uri, null, "_id = ?", new String[] {String.valueOf(id)}, null);
-            Log.d("NoteActivity", "count: " + cursor.getCount());
-            cursor.moveToFirst();
-            String string = "";
-            Log.d("NoteActivity", string = cursor.getString(cursor.getColumnIndex(NoteContentProvider.NOTE_TITLE)));
-            titleNote.setText(string);
+
+            Cursor cursor = getContentResolver().query(
+                    uri,
+                    null,
+                    BaseColumns._ID + "=?",
+                    new String[] {String.valueOf(id)},
+                    null);
+
+
+
+            if (cursor.moveToFirst()) {
+
+                String title = cursor.getString(cursor.getColumnIndex(NoteContentProvider.NOTE_TITLE));
+                String description = cursor.getString(cursor.getColumnIndex(NoteContentProvider.NOTE_DESCRIPTION));
+                String date = cursor.getString(cursor.getColumnIndex(NoteContentProvider.NOTE_DATE));
+
+                titleNote.setText(title);
+                descriptionNote.setText(description);
+                dateNote.setText(date);
+            }
         }
     }
 }
