@@ -1,26 +1,36 @@
 package ru.astar.mynotes;
 
-import android.content.ContentUris;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.LinearGradient;
 import android.net.Uri;
 import android.provider.BaseColumns;
-import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 
-import java.net.URI;
+import ru.astar.mynotes.fragments.AddNoteFragment;
+import ru.astar.mynotes.fragments.EditNoteFragment;
+import ru.astar.mynotes.fragments.NoteFragment;
 
 public class NoteActivity extends AppCompatActivity {
 
     public static final String KEY_ID = "id";
 
+    public static final int CODE_ADD_NOTE = 100;
+    public static final int CODE_ITEM_NOTE = 101;
+    public static final int CODE_EDIT_NOTE = 102;
+
     private TextView titleNote;
     private TextView descriptionNote;
     private TextView dateNote;
+
+
+    private AddNoteFragment addNoteFragment;
+    private EditNoteFragment editNoteFragment;
+    private NoteFragment noteFragment;
+
+    private android.support.v4.app.FragmentTransaction transaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,9 +38,22 @@ public class NoteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_note);
 
         initUI();
+
+        //initOldUI();
     }
 
     private void initUI() {
+        addNoteFragment = new AddNoteFragment();
+        editNoteFragment = new EditNoteFragment();
+        noteFragment = new NoteFragment();
+
+        transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.containerFragment, noteFragment);
+        transaction.show(noteFragment);
+        transaction.commit();
+    }
+
+    private void initOldUI() {
         titleNote = (TextView) findViewById(R.id.titleNote);
         descriptionNote = (TextView) findViewById(R.id.descriptionNote);
         dateNote = (TextView) findViewById(R.id.dateNote);

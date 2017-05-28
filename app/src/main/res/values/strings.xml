@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">MyNotes</string>
+    <string name="edit">Изменить</string>
+    <string name="delete">Удалить</string>
+    <string name="title">Заголовок</string>
+    <string name="description">Описание заметки</string>
+    <string name="add">Добавить</string>
+    <string name="edit_note">Изменить заметку</string>
 </resources>
