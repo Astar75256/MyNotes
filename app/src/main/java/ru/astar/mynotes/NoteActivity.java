@@ -22,8 +22,6 @@ public class NoteActivity extends AppCompatActivity {
     private TextView descriptionNote;
     private TextView dateNote;
 
-    Uri URI_NOTE_ID = NoteContentProvider.NOTE_CONTENT_URI;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,24 +37,20 @@ public class NoteActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent != null) {
-
             int id = intent.getIntExtra(KEY_ID, 0);
-            Uri.parse("content://" + NoteContentProvider.AUTORITY + "/"
-                    + NoteContentProvider.NOTE_PATH);
+            String uriPath = "content://"
+                    + NoteContentProvider.AUTORITY + "/"
+                    + NoteContentProvider.NOTE_PATH + "/#" + id;
 
-            Log.d("NoteActivity", URI_NOTE_ID.toString());
-            Cursor cursor = getContentResolver().query(URI_NOTE_ID, null, BaseColumns._ID , new String[] {String.valueOf(id)}, null);
-            Log.d("NoteActivity", "" + cursor.getCount());
+            Log.d("NoteActivity", uriPath);
 
-cursor.moveToFirst();
-                String title = cursor.getString(cursor.getColumnIndex(NoteContentProvider.NOTE_TITLE));
-                String description = cursor.getString(cursor.getColumnIndex(NoteContentProvider.NOTE_DESCRIPTION));
-                String date = cursor.getString(cursor.getColumnIndex(NoteContentProvider.NOTE_DATE));
-                titleNote.setText(title);
-                descriptionNote.setText(description);
-                dateNote.setText(date);
-
-
+            Uri uri = Uri.parse(uriPath);
+            Cursor cursor = getContentResolver().query(uri, null, "_id = ?", new String[] {String.valueOf(id)}, null);
+            Log.d("NoteActivity", "count: " + cursor.getCount());
+            cursor.moveToFirst();
+            String string = "";
+            Log.d("NoteActivity", string = cursor.getString(cursor.getColumnIndex(NoteContentProvider.NOTE_TITLE)));
+            titleNote.setText(string);
         }
     }
 }

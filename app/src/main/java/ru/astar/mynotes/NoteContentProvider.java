@@ -9,6 +9,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.LocationManager;
+import android.net.LinkProperties;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
@@ -21,6 +23,8 @@ import android.util.Log;
  */
 
 public class NoteContentProvider extends ContentProvider {
+
+    public static final String LOG_TAG = "NoteContentProvider";
 
     // название БД
     public static final String DB_NAME = "notes.db";
@@ -64,10 +68,10 @@ public class NoteContentProvider extends ContentProvider {
 
     /* Uri Matcher */
     // Общий Uri
-    public static final int URI_NOTES = 1;
+    public static final int URI_NOTES = 101;
 
     // Uri с указанным ID
-    public static final int URI_NOTES_ID = 2;
+    public static final int URI_NOTES_ID = 102;
 
     private static final UriMatcher uriMatcher;
 
@@ -75,6 +79,7 @@ public class NoteContentProvider extends ContentProvider {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(AUTORITY, NOTE_PATH, URI_NOTES);
         uriMatcher.addURI(AUTORITY, NOTE_PATH + "/#", URI_NOTES_ID);
+
     }
 
 
@@ -90,23 +95,24 @@ public class NoteContentProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectonArgs, @Nullable String sordOrder) {
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sordOrder) {
         switch (uriMatcher.match(uri)) {
             case URI_NOTES: // общий Uri
                 // ставим сортировку по имени если не указана
+                Log.d(LOG_TAG + " Общий: ", uri.toString());
                 if (TextUtils.isEmpty(sordOrder)) {
                     sordOrder = NOTE_TITLE + " ASC";
                 }
                 break;
 
             case URI_NOTES_ID:
-
+                Log.d(LOG_TAG + " Конкретный ид: ", uri.toString());
                 String id = uri.getLastPathSegment();
                 Log.d("NoteContentProvider", "URI NOTES ID " + id);
 
                 // добавим ID к условиям выборки
-                if (TextUtils.isEmpty(selection)) {
-                    selection = NOTE_ID + " =? " + id;
+                if (selection == null && TextUtils.isEmpty(selection)) {
+                    selection = NOTE_ID + " = " + id;
                 } else {
                     selection = selection + " AND " + NOTE_ID + " =? " + id;
                 }
@@ -116,8 +122,9 @@ public class NoteContentProvider extends ContentProvider {
                 throw new IllegalArgumentException("Wrong URI: " + uri.toString());
         }
 
+
         db = dbHelper.getWritableDatabase();
-        Cursor cursor = db.query(TABLE_NOTES, projection, selection, selectonArgs, null, null, sordOrder);
+        Cursor cursor = db.query(TABLE_NOTES, projection, selection, selectionArgs, null, null, sordOrder);
         // уведомляем курсор об изменении данных
         cursor.setNotificationUri(getContext().getContentResolver(), NOTE_CONTENT_URI);
         return cursor;
